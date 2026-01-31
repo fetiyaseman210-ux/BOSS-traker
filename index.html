@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Baby Boss Tracker</title>
+    <style>
+        :root {
+            --gold: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            --dark-gold: #8a6d3b;
+            --app-bg: #f8f9fb;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--app-bg);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #333;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Mobile App Container */
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            height: 100vh;
+            background: var(--app-bg);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.1);
+        }
+
+        /* App Header */
+        header {
+            padding: 40px 25px 20px;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* The Liquid Boss Corner */
+        .liquid-boss {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 150px;
+            height: 150px;
+            filter: drop-shadow(-2px 4px 10px rgba(0,0,0,0.1));
+            pointer-events: none;
+        }
+
+        .progress-container {
+            margin-top: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #fill {
+            width: 0%;
+            height: 100%;
+            background: var(--gold);
+            transition: width 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Scrollable Content */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 100px; /* Space for nav */
+        }
+
+        .month-block {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .month-header {
+            font-weight: 800;
+            color: var(--dark-gold);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Checkbox List */
+        .task {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f9f9f9;
+            cursor: pointer;
+        }
+
+        .task:last-child { border: none; }
+
+        .task input {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-right: 15px;
+            position: relative;
+            transition: 0.3s;
+        }
+
+        .task input:checked {
+            background: var(--dark-gold);
+            border-color: var(--dark-gold);
+        }
+
+        .task input:checked::after {
+            content: '\u2713';
+            color: white;
+            position: absolute;
+            left: 5px;
+            top: -1px;
+            font-weight: bold;
+        }
+
+        .task span {
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .task input:checked + span {
+            color: #bbb;
+            text-decoration: line-through;
+        }
+
+        /* Bottom Nav */
+        nav {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 70px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #eee;
+        }
+
+        .nav-item {
+            font-size: 0.7rem;
+            color: #999;
+            text-align: center;
+        }
+
+        .nav-item.active {
+            color: var(--dark-gold);
+        }
+
+        .nav-icon {
+            font-size: 1.4rem;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <svg class="liquid-boss" viewBox="0 0 200 200">
+        <defs>
+            <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#bf953f" />
+                <stop offset="50%" style="stop-color:#fcf6ba" />
+                <stop offset="100%" style="stop-color:#aa771c" />
+            </linearGradient>
+        </defs>
+        <path fill="url(#gold)" d="M200,0 L80,0 C90,40 40,60 70,100 C90,130 130,110 160,150 C180,180 190,170 200,200 Z" />
+        <text x="135" y="65" transform="rotate(35 135,65)" style="fill:#5c4000; font-weight:900; font-size:22px;">BOSS</text>
+    </svg>
+
+    <header>
+        <h1 style="margin:0; font-size: 1.6rem;">Milestones</h1>
+        <div class="progress-container">
+            <div style="display:flex; justify-content:space-between; font-size:0.8rem; margin-bottom:5px;">
+                <span>Growth Progress</span>
+                <span id="stat">0%</span>
+            </div>
+            <div class="progress-bar"><div id="fill"></div></div>
+        </div>
+    </header>
+
+    <div class="content">
+        <div class="month-block">
+            <div class="month-header"><span>Month 4-5</span> <span>⭐</span></div>
+            <label class="task"><input type="checkbox" onchange="sync()"> <span>Rolls back to tummy</span></label>
+            <label class="task"><input type="checkbox" onchange="sync()"> <span>Reaches for toys</span></label>
+            <label class="task"><input type="checkbox" onchange="sync()"> <span>Blows raspberries</span></label>
+        </div>
+
+        <div class="month-block">
+            <div class="month-header"><span>Month 6</span> <span>🥣</span></div>
+            <label class="task"><input type="checkbox" onchange="sync()"> <span>Sits with support</span></label>
+            <label class="task"><input type="checkbox" onchange="sync()"> <span>Tries first solids</span></label>
+            <label class="task"><input type="checkbox" onchange="sync()"> <span>Recognizes name</span></label>
+        </div>
+
+        <div class="month-block">
+            <div class="month-header"><span>Month 8-9</span> <span>👣</span></div>
+            <label class="task"><input type="checkbox" onchange="sync()"> <span>Passes toy between hands</span></label>
+            <label class="task"><input type="checkbox" onchange="sync()"> <span>Starts crawling</span></label>
+            <label class="task"><input type="checkbox" onchange="sync()"> <span>Pincer grasp (thumb/finger)</span></label>
+        </div>
+
+        <div class="month-block">
+            <div class="month-header"><span>Month 10</span> <span>🏆</span></div>
+            <label class="task"><input type="checkbox" onchange="sync()"> <span>Pulls up to stand</span></label>
+            <label class="task"><input type="checkbox" onchange="sync()"> <span>Waves bye-bye</span></label>
+            <label class="task"><input type="checkbox" onchange="sync()"> <span>Understands "No"</span></label>
+        </div>
+    </div>
+
+    <nav>
+        <div class="nav-item active"><div class="nav-icon">📊</div>Track</div>
+        <div class="nav-item"><div class="nav-icon">🍼</div>Feed</div>
+        <div class="nav-item"><div class="nav-icon">💤</div>Sleep</div>
+        <div class="nav-item"><div class="nav-icon">⚙️</div>Settings</div>
+    </nav>
+</div>
+
+<script>
+    function sync() {
+        const total = document.querySelectorAll('input').length;
+        const done = document.querySelectorAll('input:checked').length;
+        const progress = Math.round((done / total) * 100);
+        document.getElementById('fill').style.width = progress + '%';
+        document.getElementById('stat').innerText = progress + '%';
+    }
+</script>
+
+</body>
+</html>
